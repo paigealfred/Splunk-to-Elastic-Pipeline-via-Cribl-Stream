@@ -74,15 +74,15 @@ Created a new processing pipeline named `splunk_to_elastic` under Processing > P
 
 ---
 
-### Step 8 – Pipeline Field Mapping (Simple Preview)
-Built out the Eval function within the `splunk_to_elastic` pipeline, mapping Splunk native fields to ECS-compliant equivalents. The Simple Preview panel confirmed field transformations were applying correctly against the captured sample data, showing 20 mapped fields including `host.name`, `event.dataset`, `source.ip`, `event.action`, and `process.name`.
+### Step 8 – Pipeline Field Mapping (Simple Preview - IN View)
+Built out the Eval function within the `splunk_to_elastic` pipeline, mapping Splunk native fields to ECS-compliant equivalents. The Simple Preview IN panel confirmed 20 fields were being received from the Splunk TCP source before transformation, providing the baseline for field mapping validation.
 
 ![08-cribl-pipeline-field-mapping-preview](08-cribl-pipeline-field-mapping-preview.png)
 
 ---
 
 ### Step 9 – Pipeline ECS Field Mapping Output Validated
-Expanded the pipeline preview to the OUT view, confirming all 33 output fields were present and correctly mapped. Key ECS fields including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path` were all visible and populated, validating the normalization logic before deployment.
+Switched to the OUT view confirming all 33 output fields were present and correctly mapped. Key ECS fields including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path` were all visible and populated, validating the normalization logic before deployment.
 
 ![09-cribl-pipeline-ecs-field-mapping-out](09-cribl-pipeline-ecs-field-mapping-out.png)
 
@@ -131,7 +131,7 @@ Created a data route named `splunk_to_elastic` under Routing > Data Routes, asso
 ---
 
 ### Step 16 – Data Route Active with Input Filtering
-Updated the route filter to `__inputId == 'splunk_tcp:in_splunk_tcp'` to scope routing exclusively to events originating from the Splunk TCP source. Confirmed the route was processing **1.602%** of live traffic through the pipeline with the default route handling the remainder.
+Updated the route filter to `__inputId == 'splunk_tcp:in_splunk_tcp'` to scope routing exclusively to events originating from the Splunk TCP source. Confirmed the route was actively processing live traffic through the pipeline to the Elastic destination.
 
 ![16-cribl-data-route-active-filtering](16-cribl-data-route-active-filtering.png)
 

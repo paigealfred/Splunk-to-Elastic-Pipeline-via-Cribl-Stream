@@ -1,0 +1,1 @@
+# Splunk-to-Elastic-Pipeline-via-Cribl-Stream

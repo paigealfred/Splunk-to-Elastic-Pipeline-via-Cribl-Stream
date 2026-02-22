@@ -25,15 +25,15 @@ Splunk Enterprise → outputs.conf (TCP) → Cribl Stream → ECS Normalization 
 
 ## Step-by-Step Configuration
 
-### Step 1 – Cribl Worker Group Overview
-Accessed the Cribl Stream Worker Group dashboard confirming the environment was active with 9 pipelines, 2 routes, and throughput metrics showing 790+ KB in/out over 24 hours. This served as the baseline before beginning source and pipeline configuration.
+### Step 1 – Splunk outputs.conf TCP Forwarding
+Configured Splunk's `outputs.conf` to forward all data to Cribl Stream via TCP using a `cribl_group` stanza pointing to the Cribl Cloud ingress address on port `9997`. This redirected Splunk's default indexer output to Cribl as the intermediary processing layer.
 
-![01-cribl-worker-group-overview](01-cribl-worker-group-overview.png)
+![01-splunk-outputs-conf-tcp-forwarding](01-splunk-outputs-conf-tcp-forwarding.png)
 
 ---
 
 ### Step 2 – Cribl Sources Overview
-Navigated to Data > Sources within the Worker Group to review all available input types. Confirmed existing configured sources including Splunk TCP (1), Splunk HEC (1), Syslog (2), and TCP (1), providing a clear view of the ingestion landscape before adding new sources.
+Navigated to Data > Sources within the Worker Group to review all available input types. Confirmed existing configured sources including Splunk TCP, Splunk HEC, Syslog, and TCP, providing a clear view of the ingestion landscape before adding new sources.
 
 ![02-cribl-sources-overview](02-cribl-sources-overview.png)
 
@@ -60,10 +60,10 @@ Verified active data flow on the `in_splunk_tcp` source via the Charts tab, show
 
 ---
 
-### Step 6 – Splunk outputs.conf TCP Forwarding
-Configured Splunk's `outputs.conf` to forward all data to Cribl Stream via TCP using a `cribl_group` stanza pointing to the Cribl Cloud ingress address on port `9997`. This redirected Splunk's default indexer output to Cribl as the intermediary processing layer.
+### Step 6 – Cribl Worker Group Overview
+Reviewed the Cribl Stream Worker Group dashboard confirming the environment was active with 9 pipelines, 2 routes, and throughput metrics showing 790+ KB in/out over 24 hours, validating the environment was healthy before building the processing pipeline.
 
-![06-splunk-outputs-conf-tcp-forwarding](06-splunk-outputs-conf-tcp-forwarding.png)
+![06-cribl-worker-group-overview](06-cribl-worker-group-overview.png)
 
 ---
 
@@ -74,14 +74,14 @@ Created a new processing pipeline named `splunk_to_elastic` under Processing > P
 
 ---
 
-### Step 8 – Pipeline Field Mapping (Simple Preview - IN View)
+### Step 8 – Pipeline Field Mapping (IN View)
 Built out the Eval function within the `splunk_to_elastic` pipeline, mapping Splunk native fields to ECS-compliant equivalents. The Simple Preview IN panel confirmed 20 fields were being received from the Splunk TCP source before transformation, providing the baseline for field mapping validation.
 
 ![08-cribl-pipeline-field-mapping-preview](08-cribl-pipeline-field-mapping-preview.png)
 
 ---
 
-### Step 9 – Pipeline ECS Field Mapping Output Validated
+### Step 9 – Pipeline ECS Field Mapping Output Validated (OUT View)
 Switched to the OUT view confirming all 33 output fields were present and correctly mapped. Key ECS fields including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path` were all visible and populated, validating the normalization logic before deployment.
 
 ![09-cribl-pipeline-ecs-field-mapping-out](09-cribl-pipeline-ecs-field-mapping-out.png)
@@ -131,7 +131,7 @@ Created a data route named `splunk_to_elastic` under Routing > Data Routes, asso
 ---
 
 ### Step 16 – Data Route Active with Input Filtering
-Updated the route filter to `__inputId == 'splunk_tcp:in_splunk_tcp'` to scope routing exclusively to events originating from the Splunk TCP source. Confirmed the route was actively processing live traffic through the pipeline to the Elastic destination.
+Updated the route filter to `__inputId == 'splunk_tcp:in_splunk_tcp'` to scope routing exclusively to events originating from the Splunk TCP source. Confirmed the route was actively processing **1.602%** of live traffic through the pipeline to the Elastic destination.
 
 ![16-cribl-data-route-active-filtering](16-cribl-data-route-active-filtering.png)
 

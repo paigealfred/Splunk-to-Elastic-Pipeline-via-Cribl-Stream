@@ -25,22 +25,22 @@ Splunk Enterprise → outputs.conf (TCP) → Cribl Stream → ECS Normalization 
 
 ## Step-by-Step Configuration
 
-### Step 1 – Splunk outputs.conf TCP Forwarding
+### Step 1 – Splunk outputs.conf Configuration
 Configured Splunk's `outputs.conf` to forward all data to Cribl Stream via TCP using a `cribl_group` stanza pointing to the Cribl Cloud ingress address on port `9997`. This redirected Splunk's default indexer output to Cribl as the intermediary processing layer.
 
-![01-splunk-outputs-conf-tcp-forwarding](01-splunk-outputs-conf-tcp-forwarding.png)
+![01-splunk-outputs-conf-configuration](01-splunk-outputs-conf-configuration.png)
 
 ---
 
 ### Step 2 – Cribl Worker Group Overview
-Accessed the Cribl Stream Worker Group dashboard confirming the environment was active with 9 pipelines, 2 routes, and throughput metrics showing 790+ KB in/out over 24 hours. Recent actions log confirmed prior pipeline and route configurations were already in place.
+Accessed the Cribl Stream Worker Group dashboard confirming the environment was active with 9 pipelines, 2 routes, and throughput metrics showing 790+ KB in/out over 24 hours. Recent actions confirmed prior pipeline and route configurations were in place.
 
 ![02-cribl-worker-group-overview](02-cribl-worker-group-overview.png)
 
 ---
 
 ### Step 3 – Cribl Sources Overview
-Navigated to Data > Sources within the Worker Group to review all available input types. Confirmed existing configured sources including Splunk TCP (1), Splunk HEC (1), Syslog (2), and TCP (1), providing a clear view of the ingestion landscape before configuring the new source.
+Navigated to Data > Sources within the Worker Group to review all available input types. Confirmed existing configured sources including Splunk TCP (1), Splunk HEC (1), Syslog (2), and TCP (1).
 
 ![03-cribl-sources-overview](03-cribl-sources-overview.png)
 
@@ -68,28 +68,28 @@ Created a new processing pipeline named `splunk_to_elastic` under Processing > P
 ---
 
 ### Step 7 – Splunk TCP Live Data Capture
-Used the Live Data tab on the `in_splunk_tcp` source to capture real-time events flowing from Splunk. Saved the capture as `splunk sample data.log` to use as sample data for pipeline preview and field mapping validation.
+Used the Live Data tab on the `in_splunk_tcp` source to capture real-time events flowing from Splunk. Saved the capture as `splunk sample data.log` for use as sample data during pipeline field mapping validation.
 
 ![07-cribl-splunk-tcp-live-data](07-cribl-splunk-tcp-live-data.png)
 
 ---
 
-### Step 8 – Pipeline ECS Field Mapping (OUT View - 33 Fields)
-Built out the Eval function within the `splunk_to_elastic` pipeline, mapping Splunk native fields to ECS-compliant equivalents. The OUT view confirmed all **33 output fields** were present and correctly mapped, including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path`.
+### Step 8 – Pipeline ECS Field Mapping (OUT View – 33 Fields)
+Built out the Eval function within the `splunk_to_elastic` pipeline mapping Splunk native fields to ECS-compliant equivalents. The OUT view confirmed all **33 output fields** were present and correctly populated including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path`.
 
-![08-cribl-pipeline-field-mapping-out](08-cribl-pipeline-field-mapping-out.png)
+![08-cribl-pipeline-ecs-field-mapping-out](08-cribl-pipeline-ecs-field-mapping-out.png)
 
 ---
 
-### Step 9 – Pipeline Field Mapping (IN View - 20 Fields)
+### Step 9 – Pipeline Field Mapping (IN View – 20 Fields)
 Reviewed the Simple Preview IN view confirming **20 fields** were being received from the Splunk TCP source before transformation, validating the raw input structure against the expected ECS output mappings.
 
 ![09-cribl-pipeline-field-mapping-preview](09-cribl-pipeline-field-mapping-preview.png)
 
 ---
 
-### Step 10 – Elastic API Key Created (cribl ingest)
-Generated a new API key named `cribl ingest` in Elastic Cloud under Stack Management > API Keys to authenticate Cribl Stream's outbound connection to the Elastic Elasticsearch endpoint. Key value was copied immediately as it is only shown once.
+### Step 10 – Elastic API Key Created
+Generated a new API key named `cribl ingest` in Elastic Cloud under Stack Management > API Keys to authenticate Cribl Stream's outbound connection to the Elasticsearch endpoint. Key value was copied immediately as it is only shown once.
 
 ![10-elastic-api-key-created](10-elastic-api-key-created.png)
 
@@ -109,8 +109,8 @@ Configured the Elasticsearch destination (`elastic_output`) with the Elastic Clo
 
 ---
 
-### Step 13 – Elastic API Key Confirmed Active (cribl-ingest)
-Confirmed the `cribl-ingest` API key status as **Active** in Elastic Stack Management. The encoded key value was visible and confirmed ready for use in the Cribl destination authentication configuration.
+### Step 13 – Elastic API Key Confirmed Active
+Confirmed the `cribl-ingest` API key status as **Active** in Elastic Stack Management with the encoded key value visible and ready for use in the Cribl destination authentication configuration.
 
 ![13-elastic-api-key-confirmed](13-elastic-api-key-confirmed.png)
 
@@ -145,7 +145,7 @@ Created a Kibana Data View named `splunk-cribl` with index pattern `splunk-logs*
 ---
 
 ### Step 18 – Kibana Discover Validation
-Queried the `splunk-cribl` data view in Kibana Discover, confirming **807 documents** ingested with active histogram activity. Inspected individual documents to verify field accuracy — `cribl_pipe: splunk_to_elastic`, `_index: splunk-logs`, `host.name: DESKTOP-4AHEVC0`, and all ECS-mapped fields present and correctly populated, validating the full end-to-end pipeline.
+Queried the `splunk-cribl` data view in Kibana Discover, confirming **807 documents** ingested with active histogram activity. Inspected individual documents verifying `cribl_pipe: splunk_to_elastic`, `_index: splunk-logs`, `host.name: DESKTOP-4AHEVC0`, and all ECS-mapped fields present and correctly populated, validating the full end-to-end pipeline.
 
 ![18-kibana-discover-validation-807-documents](18-kibana-discover-validation-807-documents.png)
 

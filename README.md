@@ -32,24 +32,24 @@ Configured Splunk's `outputs.conf` to forward all data to Cribl Stream via TCP u
 
 ---
 
-### Step 2 – Cribl Sources Overview
-Navigated to Data > Sources within the Worker Group to review all available input types. Confirmed existing configured sources including Splunk TCP, Splunk HEC, Syslog, and TCP, providing a clear view of the ingestion landscape before adding new sources.
+### Step 2 – Cribl Worker Group Overview
+Accessed the Cribl Stream Worker Group dashboard confirming the environment was active with 9 pipelines, 2 routes, and throughput metrics showing 790+ KB in/out over 24 hours. Recent actions log confirmed prior pipeline and route configurations were already in place.
 
-![02-cribl-sources-overview](02-cribl-sources-overview.png)
-
----
-
-### Step 3 – Splunk TCP Source Configured
-Configured a Splunk TCP source (`in_splunk_tcp`) listening on port `9997` at `0.0.0.0`, set to route through the pipeline. Status confirmed as Live and enabled, establishing the receiving endpoint for Splunk forwarder traffic.
-
-![03-cribl-splunk-tcp-source-configured](03-cribl-splunk-tcp-source-configured.png)
+![02-cribl-worker-group-overview](02-cribl-worker-group-overview.png)
 
 ---
 
-### Step 4 – Splunk TCP Live Data Capture
-Used the Live Data tab on the `in_splunk_tcp` source to capture real-time events flowing from Splunk. Saved the capture as `splunk sample data.log` for use as sample data during pipeline development. Live events confirmed raw Splunk internal metrics logs with fields such as `host`, `source`, `sourcetype`, `index`, and `_time`.
+### Step 3 – Cribl Sources Overview
+Navigated to Data > Sources within the Worker Group to review all available input types. Confirmed existing configured sources including Splunk TCP (1), Splunk HEC (1), Syslog (2), and TCP (1), providing a clear view of the ingestion landscape before configuring the new source.
 
-![04-cribl-splunk-tcp-live-data](04-cribl-splunk-tcp-live-data.png)
+![03-cribl-sources-overview](03-cribl-sources-overview.png)
+
+---
+
+### Step 4 – Splunk TCP Source Configured
+Configured a Splunk TCP source (`in_splunk_tcp`) listening on port `9997` at `0.0.0.0`, set to route through the pipeline. Status confirmed as **Live** and enabled, establishing the receiving endpoint for Splunk forwarder traffic.
+
+![04-cribl-splunk-tcp-source-configured](04-cribl-splunk-tcp-source-configured.png)
 
 ---
 
@@ -60,59 +60,59 @@ Verified active data flow on the `in_splunk_tcp` source via the Charts tab, show
 
 ---
 
-### Step 6 – Cribl Worker Group Overview
-Reviewed the Cribl Stream Worker Group dashboard confirming the environment was active with 9 pipelines, 2 routes, and throughput metrics showing 790+ KB in/out over 24 hours, validating the environment was healthy before building the processing pipeline.
+### Step 6 – Cribl Pipeline Created
+Created a new processing pipeline named `splunk_to_elastic` under Processing > Pipelines. Sample data files from prior captures were available for use during pipeline development and preview testing.
 
-![06-cribl-worker-group-overview](06-cribl-worker-group-overview.png)
-
----
-
-### Step 7 – Cribl Pipeline Created
-Created a new processing pipeline named `splunk_to_elastic` under Processing > Pipelines. This pipeline was built to normalize incoming Splunk events into ECS-compliant field names before forwarding to Elastic Cloud.
-
-![07-cribl-pipeline-created](07-cribl-pipeline-created.png)
+![06-cribl-pipeline-created](06-cribl-pipeline-created.png)
 
 ---
 
-### Step 8 – Pipeline Field Mapping (IN View)
-Built out the Eval function within the `splunk_to_elastic` pipeline, mapping Splunk native fields to ECS-compliant equivalents. The Simple Preview IN panel confirmed 20 fields were being received from the Splunk TCP source before transformation, providing the baseline for field mapping validation.
+### Step 7 – Splunk TCP Live Data Capture
+Used the Live Data tab on the `in_splunk_tcp` source to capture real-time events flowing from Splunk. Saved the capture as `splunk sample data.log` to use as sample data for pipeline preview and field mapping validation.
 
-![08-cribl-pipeline-field-mapping-preview](08-cribl-pipeline-field-mapping-preview.png)
-
----
-
-### Step 9 – Pipeline ECS Field Mapping Output Validated (OUT View)
-Switched to the OUT view confirming all 33 output fields were present and correctly mapped. Key ECS fields including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path` were all visible and populated, validating the normalization logic before deployment.
-
-![09-cribl-pipeline-ecs-field-mapping-out](09-cribl-pipeline-ecs-field-mapping-out.png)
+![07-cribl-splunk-tcp-live-data](07-cribl-splunk-tcp-live-data.png)
 
 ---
 
-### Step 10 – Elastic API Key Created
-Generated a new API key named `cribl-ingest` in Elastic Cloud under Stack Management > API Keys to authenticate Cribl Stream's outbound connection to the Elastic Elasticsearch endpoint.
+### Step 8 – Pipeline ECS Field Mapping (OUT View - 33 Fields)
+Built out the Eval function within the `splunk_to_elastic` pipeline, mapping Splunk native fields to ECS-compliant equivalents. The OUT view confirmed all **33 output fields** were present and correctly mapped, including `cribl_pipe: splunk_to_elastic`, `event.dataset`, `host.name`, `labels.group`, `metric_name`, and `log.file.path`.
+
+![08-cribl-pipeline-field-mapping-out](08-cribl-pipeline-field-mapping-out.png)
+
+---
+
+### Step 9 – Pipeline Field Mapping (IN View - 20 Fields)
+Reviewed the Simple Preview IN view confirming **20 fields** were being received from the Splunk TCP source before transformation, validating the raw input structure against the expected ECS output mappings.
+
+![09-cribl-pipeline-field-mapping-preview](09-cribl-pipeline-field-mapping-preview.png)
+
+---
+
+### Step 10 – Elastic API Key Created (cribl ingest)
+Generated a new API key named `cribl ingest` in Elastic Cloud under Stack Management > API Keys to authenticate Cribl Stream's outbound connection to the Elastic Elasticsearch endpoint. Key value was copied immediately as it is only shown once.
 
 ![10-elastic-api-key-created](10-elastic-api-key-created.png)
 
 ---
 
-### Step 11 – Elastic API Key Confirmed Active
-Confirmed the `cribl-ingest` API key status as **Active** alongside existing managed keys. Copied the encoded key value for use in the Cribl Elasticsearch destination configuration.
-
-![11-elastic-api-key-confirmed](11-elastic-api-key-confirmed.png)
-
----
-
-### Step 12 – Cribl Destinations Overview
+### Step 11 – Cribl Destinations Overview
 Navigated to Data > Destinations within Cribl Stream to review all available output targets. Selected **Elastic Elasticsearch** as the destination type to configure the outbound connection to Elastic Cloud.
 
-![12-cribl-destinations-overview](12-cribl-destinations-overview.png)
+![11-cribl-destinations-overview](11-cribl-destinations-overview.png)
 
 ---
 
-### Step 13 – Cribl Elastic Destination Configured
+### Step 12 – Cribl Elastic Destination Configured
 Configured the Elasticsearch destination (`elastic_output`) with the Elastic Cloud bulk API URL, index set to `splunk-logs`, and load balancing enabled. This established the delivery endpoint where all processed and normalized events would be forwarded.
 
-![13-cribl-elastic-destination-configured](13-cribl-elastic-destination-configured.png)
+![12-cribl-elastic-destination-configured](12-cribl-elastic-destination-configured.png)
+
+---
+
+### Step 13 – Elastic API Key Confirmed Active (cribl-ingest)
+Confirmed the `cribl-ingest` API key status as **Active** in Elastic Stack Management. The encoded key value was visible and confirmed ready for use in the Cribl destination authentication configuration.
+
+![13-elastic-api-key-confirmed](13-elastic-api-key-confirmed.png)
 
 ---
 
@@ -131,14 +131,14 @@ Created a data route named `splunk_to_elastic` under Routing > Data Routes, asso
 ---
 
 ### Step 16 – Data Route Active with Input Filtering
-Updated the route filter to `__inputId == 'splunk_tcp:in_splunk_tcp'` to scope routing exclusively to events originating from the Splunk TCP source. Confirmed the route was actively processing **1.602%** of live traffic through the pipeline to the Elastic destination.
+Updated the route filter to `__inputId == 'splunk_tcp:in_splunk_tcp'` to scope routing exclusively to events originating from the Splunk TCP source. Confirmed the route was actively processing **1.602%** of live traffic through the `splunk_to_elastic` pipeline to the `elastic:elastic_output` destination.
 
 ![16-cribl-data-route-active-filtering](16-cribl-data-route-active-filtering.png)
 
 ---
 
 ### Step 17 – Elastic Data View Created in Kibana
-Created a Kibana Data View named `splunk-cribl` with index pattern `splunk-logs*` and timestamp field set to `@timestamp`. Elastic confirmed the pattern matched **1 source** (`splunk-logs` index), making the data queryable in Kibana Discover.
+Created a Kibana Data View named `splunk-cribl` with index pattern `splunk-logs*` and timestamp field set to `@timestamp`. Elastic confirmed the pattern matched **1 source** (`splunk-logs` index), making the ingested data fully queryable in Kibana Discover.
 
 ![17-elastic-data-view-splunk-cribl](17-elastic-data-view-splunk-cribl.png)
 
